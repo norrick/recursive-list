@@ -12,8 +12,6 @@ function App() {
       </header>
 
     <ListContainer />
-    
-   
     </div>
   );
 }

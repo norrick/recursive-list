@@ -5,7 +5,7 @@ import List from './List'
 interface ListProps {}
 
 export interface listItem {
-    title : string,
+    todo : string,
     children? : listItem[]
 }
 
@@ -23,7 +23,7 @@ function ListContainer() {
         if(!text || text.length === 0) 
             return;
             
-        const newItem : listItem = {title : text, children : []};
+        const newItem : listItem = {todo : text, children : []};
         
         setListObj([...listObj, newItem]);
         setNewItemText('');
@@ -33,7 +33,7 @@ function ListContainer() {
         if(!text || text.length === 0) 
             return;
 
-        const newItem : listItem = {title : text, children : []};
+        const newItem : listItem = {todo : text, children : []};
      
         parentItem.children?.push(newItem);
         setListObj([...listObj]);
@@ -41,35 +41,41 @@ function ListContainer() {
     }
 
     function removeItem(parentItem : listItem) {
-      setListObj(filterID(parentItem, listObj));
-    }
+      parentItem.children?.forEach(child => removeItem(child));
+      setListObj(listObj.filter((currItem: listItem) => currItem !== parentItem));
 
-    //https://stackoverflow.com/questions/53979950/remove-children-from-a-nested-array-using-recursion
-    function filterID(parentItem : listItem, data : listItem[]) {
-      return data.reduce((arr : listItem[], item) => {
-        if (item !== parentItem) {
-          if (item.children) item.children = filterID(parentItem, item.children)
-          arr.push(item)
-        }
-        return arr  
-      }, [])
+      //setListObj(filterID(parentItem, listObj)); alternate state update using below function
     }
+   
+    //I believe this would be a more optimized method of recursively deleting child items as the array is passed by reference and state only needs to be updated once. 
+    //In the above function, every recursive call creates a new copy of the array in the filter function as it updates state. 
+    
+    // function filterID(parentItem : listItem, data : listItem[]) {  // found at https://stackoverflow.com/questions/53979950/remove-children-from-a-nested-array-using-recursion
+    //   return data.reduce((arr : listItem[], item) => {
+    //     if (item !== parentItem) {
+    //       if (item.children) item.children = filterID(parentItem, item.children)
+    //       arr.push(item)
+    //     }
+    //     return arr  
+    //   }, [])
+    // }
 
     return(
       <div className="container">
-        <div>
+        <div className='inputArea'>
           <form >
             <label>
             New Item:
-            <input type="text" name="name" value={newItemText} onChange={(e) => setNewItemText(e.target.value)}/>
             </label>
-            <input type="submit" value="Submit" onClick={(e) => {e.preventDefault(); addItem(newItemText)}}/>
+            <input type="text" name="name" value={newItemText} onChange={(e) => setNewItemText(e.target.value)}/>
+           
+            <input  className='buttons' type="submit" value="Submit" onClick={(e) => {e.preventDefault(); addItem(newItemText)}}/>
           </form>
-
         </div>
 
-        <List nestLevel={1} listItems={listObj} addSubItem={addSubItem} removeItem={removeItem} newItemText={newItemText}/>
-          
+        <div className="listItems">
+          <List nestLevel={1} listItems={listObj} addSubItem={addSubItem} removeItem={removeItem} newItemText={newItemText}/>
+        </div>
       </div> 
     )
 }
