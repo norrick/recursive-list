@@ -41,24 +41,18 @@ function ListContainer() {
     }
 
     function removeItem(parentItem : listItem) {
-      parentItem.children?.forEach(child => removeItem(child));
-      setListObj(listObj.filter((currItem: listItem) => currItem !== parentItem));
-
-      //setListObj(filterID(parentItem, listObj)); alternate state update using below function
+      setListObj(filterID(parentItem, listObj)); 
     }
    
-    //I believe this would be a more optimized method of recursively deleting child items as the array is passed by reference and state only needs to be updated once. 
-    //In the above function, every recursive call creates a new copy of the array in the filter function as it updates state. 
-    
-    // function filterID(parentItem : listItem, data : listItem[]) {  // found at https://stackoverflow.com/questions/53979950/remove-children-from-a-nested-array-using-recursion
-    //   return data.reduce((arr : listItem[], item) => {
-    //     if (item !== parentItem) {
-    //       if (item.children) item.children = filterID(parentItem, item.children)
-    //       arr.push(item)
-    //     }
-    //     return arr  
-    //   }, [])
-    // }
+    function filterID(parentItem : listItem, data : listItem[]) {  // found at https://stackoverflow.com/questions/53979950/remove-children-from-a-nested-array-using-recursion
+      return data.reduce((arr : listItem[], item) => {
+        if (item !== parentItem) {
+          if (item.children) item.children = filterID(parentItem, item.children)
+          arr.push(item)
+        }
+        return arr  
+      }, [])
+    }
 
     return(
       <div className="container">
