@@ -44,6 +44,9 @@ function ListContainer() {
       setListObj(filterID(parentItem, listObj)); 
     }
    
+    //I believe this to be an optimized solution to the problem of recursive deletion. 
+    //Most soltions, including the one I originally created, involved copying the array numerous times to update the state of listObj for every recursive call
+    //In this situation, a new array is created and passed between the function calls by reference, so the array only needs to be copied once
     function filterID(parentItem : listItem, data : listItem[]) {  // found at https://stackoverflow.com/questions/53979950/remove-children-from-a-nested-array-using-recursion
       return data.reduce((arr : listItem[], item) => {
         if (item !== parentItem) {
